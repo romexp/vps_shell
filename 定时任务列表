@@ -1,0 +1,5 @@
+crontab -e
+定时任务列表
+0 0 * * * ~/auto_cert_renewal.sh
+11 20 * * * /usr/bin/curl -s "URL"
+0 * * * * /usr/bin/curl -s "URL"
