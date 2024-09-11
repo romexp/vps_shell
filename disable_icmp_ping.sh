@@ -7,7 +7,7 @@
 # 方法二：临时禁用 ICMP ping
 disable_icmp_ping_temp() {
     echo "临时禁用 ICMP ping..."
-    sudo sysctl -w net.ipv4.icmp_echo_ignore_all=1
+    sysctl -w net.ipv4.icmp_echo_ignore_all=1
     echo "临时禁用完成."
 }
 
@@ -15,11 +15,11 @@ disable_icmp_ping_temp() {
 disable_icmp_ping_perm() {
     echo "永久禁用 ICMP ping..."
     if grep -q "net.ipv4.icmp_echo_ignore_all" /etc/sysctl.conf; then
-        sudo sed -i 's/net.ipv4.icmp_echo_ignore_all=.*/net.ipv4.icmp_echo_ignore_all=1/' /etc/sysctl.conf
+        sed -i 's/net.ipv4.icmp_echo_ignore_all=.*/net.ipv4.icmp_echo_ignore_all=1/' /etc/sysctl.conf
     else
-        echo "net.ipv4.icmp_echo_ignore_all=1" | sudo tee -a /etc/sysctl.conf
+        echo "net.ipv4.icmp_echo_ignore_all=1" >> /etc/sysctl.conf
     fi
-    sudo sysctl -p
+    sysctl -p
     echo "永久禁用完成."
 }
 
@@ -28,13 +28,13 @@ disable_icmp_ping_ufw() {
     echo "通过 UFW 禁用 ICMP ping..."
     if [ -f /etc/ufw/before.rules ]; then
         # 备份 before.rules 文件
-        sudo cp /etc/ufw/before.rules /etc/ufw/before.rules.backup
+        cp /etc/ufw/before.rules /etc/ufw/before.rules.backup
 
         # 修改 before.rules 文件
-        sudo sed -i '/-A ufw-before-input -p icmp --icmp-type echo-request -j ACCEPT/ s/ACCEPT/DROP/' /etc/ufw/before.rules
+        sed -i '/-A ufw-before-input -p icmp --icmp-type echo-request -j ACCEPT/ s/ACCEPT/DROP/' /etc/ufw/before.rules
         
         echo "UFW 规则已更新，重启 UFW..."
-        sudo ufw reload
+        ufw reload
         echo "通过 UFW 禁用 ICMP ping 完成."
     else
         echo "/etc/ufw/before.rules 文件不存在，无法配置 UFW 规则。"
